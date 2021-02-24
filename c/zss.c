@@ -67,10 +67,12 @@
 #endif
 
 #include "zssLogging.h"
+#include "semtable.h"
 #include "serviceUtils.h"
 #include "unixFileService.h"
 #include "omvsService.h"
 #include "datasetService.h"
+#include "heartbeat.h"
 #include "serverStatusService.h"
 #include "rasService.h"
 #include "certificateService.h"
@@ -1131,6 +1133,7 @@ int main(int argc, char **argv){
   stcBaseInit(base); /* inits RLEAnchor, workQueue, socketSet, logContext */
   initVersionComponents();
   initLoggingComponents();
+  initSemTable();
 
   if (argc == 1) {
     zowelog(NULL, LOG_COMP_ID_MVD_SERVER, ZOWE_LOG_WARNING, ZSS_LOG_PATH_TO_SERVER_MSG);
@@ -1226,6 +1229,7 @@ int main(int argc, char **argv){
       installDatasetMetadataService(server);
       installDatasetContentsService(server);
       installDatasetEnqueueService(server);
+      installDatasetHeartbeatService(server);
       installAuthCheckService(server);
       installSecurityManagementServices(server);
       installOMVSService(server);
@@ -1233,6 +1237,7 @@ int main(int argc, char **argv){
       installZosPasswordService(server);
       installRASService(server);
 #endif
+      registerMonitoringLoop();
       installLoginService(server);
       installLogoutService(server);
       printZISStatus(server);
